@@ -7,6 +7,8 @@ the upper-right and sends escalating waves against you. Every soldier, projectil
 death-blast physically shoves the words of the chronicle aside as the war moves across
 the text, and the letters spring back like reeds.
 
+**[▶ Play it now →](https://kevinrufino.github.io/third-war-chronicle/)**
+
 Built around [pretext](https://github.com/chenglou/pretext), chenglou's pure-arithmetic
 text measurement & layout engine.
 
@@ -37,12 +39,16 @@ Canvas has no multiline text. pretext *is* the text engine here:
 
 Gold accrues over time. The Scourge's waves grow with every assault it loses.
 
-## Run
+## Play
+
+Visit **[kevinrufino.github.io/third-war-chronicle](https://kevinrufino.github.io/third-war-chronicle/)** — no installation needed.
+
+## Develop
 
 ```sh
 npm install
-npm run dev     # vite dev server (Node 18+)
-npm run build   # type-check + production build
+npm run dev     # localhost:5173 dev server (Node 18+)
+npm run build   # type-check + production build → dist/
 ```
 
 ## Structure
