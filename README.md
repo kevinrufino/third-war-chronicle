@@ -7,7 +7,7 @@ the upper-right and sends escalating waves against you. Every soldier, projectil
 death-blast physically shoves the words of the chronicle aside as the war moves across
 the text, and the letters spring back like reeds.
 
-**[▶ Play it now →](https://kevinrufino.github.io/third-war-chronicle/)**
+**[▶ Play it now →](https://third-war-chronicle.vercel.app/)**
 
 Built around [pretext](https://github.com/chenglou/pretext), chenglou's pure-arithmetic
 text measurement & layout engine.
@@ -15,7 +15,7 @@ text measurement & layout engine.
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178c6?logo=typescript&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-646cff?logo=vite&logoColor=white)
 ![No framework](https://img.shields.io/badge/framework-none-2b2015)
-![Deploy](https://github.com/kevinrufino/third-war-chronicle/actions/workflows/deploy.yml/badge.svg)
+![Deployed on Vercel](https://img.shields.io/badge/deployed-Vercel-000000?logo=vercel&logoColor=white)
 ![License: MIT](https://img.shields.io/badge/license-MIT-9a7423)
 
 ## Why pretext
@@ -47,7 +47,7 @@ Gold accrues over time. The Scourge's waves grow with every assault it loses.
 
 ## Play
 
-Visit **[kevinrufino.github.io/third-war-chronicle](https://kevinrufino.github.io/third-war-chronicle/)** — no installation needed.
+Visit **[third-war-chronicle.vercel.app](https://third-war-chronicle.vercel.app/)** — no installation needed.
 
 ## Develop
 
@@ -87,13 +87,16 @@ drawn (binary-searched against pretext's measured line positions).
 
 - **[pretext](https://github.com/chenglou/pretext)** — text measurement & line layout (the core dependency)
 - **TypeScript**, no UI framework — a single `<canvas>` and a hand-written rAF loop
-- **Vite** for dev/build; deployed to **GitHub Pages** via GitHub Actions on every push to `main`
+- **Vite** for dev/build; deployed to **Vercel**
 - Typefaces: *UnifrakturMaguntia* (blackletter), *IM Fell English* (body), *Cinzel* (small caps)
 
 ## Deployment
 
-Pushing to `main` triggers [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml),
-which builds with Node 20 and publishes `dist/` to GitHub Pages. No manual step.
+Hosted on **Vercel** (auto-detected Vite project). Deploy from the repo root with:
+
+```sh
+vercel --prod
+```
 
 ## Credits & disclaimer
 
