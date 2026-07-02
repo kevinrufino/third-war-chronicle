@@ -1,0 +1,341 @@
+/* ————————————————————————————————————————————————
+   The Chronicle of the Third War — illuminated manuscript chrome
+   Palette: aged parchment, iron-gall ink, rubric red, muted gold
+   ———————————————————————————————————————————————— */
+
+:root {
+  --parchment: #efe4ca;
+  --parchment-deep: #e2d2ac;
+  --ink: #2b2015;
+  --ink-faded: #574430;
+  --rubric: #7f1b14;
+  --gold: #9a7423;
+  --gold-bright: #c9a648;
+  --leather: #241509;
+  --leather-2: #3a2412;
+  --lapis: #24457c;
+  --scourge: #5c7c2e;
+}
+
+* { box-sizing: border-box; }
+
+html { scrollbar-color: var(--gold) rgba(43, 32, 21, 0.15); }
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(120% 90% at 50% 0%, rgba(255, 250, 235, 0.55), rgba(255, 250, 235, 0) 60%),
+    radial-gradient(90% 70% at 12% 100%, rgba(122, 90, 44, 0.18), rgba(122, 90, 44, 0) 55%),
+    radial-gradient(90% 70% at 92% 6%, rgba(94, 70, 38, 0.16), rgba(94, 70, 38, 0) 55%),
+    linear-gradient(160deg, var(--parchment) 0%, #ead9b7 55%, var(--parchment-deep) 100%);
+  background-attachment: fixed;
+  font-family: "IM Fell English", serif;
+  color: var(--ink);
+  overscroll-behavior-y: none;
+}
+
+/* Fibrous grain over everything — the sheet the war is fought upon */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+  opacity: 0.5;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.45 0 0 0 0 0.38 0 0 0 0 0.26 0 0 0 0.16 0'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Vignette: candle-lit edges */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+  background: radial-gradient(130% 105% at 50% 42%, rgba(35, 22, 8, 0) 62%, rgba(35, 22, 8, 0.34) 100%);
+}
+
+#spacer { position: relative; z-index: 0; width: 100%; }
+
+#stage {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  width: 100vw;
+  height: 100vh;
+  display: block;
+  cursor: crosshair;
+}
+
+/* ——— Folio header ——— */
+#folio {
+  position: fixed;
+  top: 14px;
+  right: 22px;
+  z-index: 7;
+  text-align: right;
+  font-family: "Cinzel", serif;
+  color: var(--ink-faded);
+  pointer-events: none;
+  text-shadow: 0 1px 0 rgba(255, 250, 235, 0.6);
+}
+#folio-label {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--rubric);
+}
+#folio-title {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  margin-top: 2px;
+  max-width: 300px;
+}
+
+#progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: 7;
+  background: rgba(43, 32, 21, 0.12);
+  pointer-events: none;
+}
+#progress-fill {
+  height: 100%;
+  width: 100%;
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+  background: linear-gradient(90deg, var(--gold), var(--gold-bright));
+  box-shadow: 0 0 6px rgba(201, 166, 72, 0.7);
+}
+
+/* ——— War council (HUD) ——— */
+#hud {
+  position: fixed;
+  left: 50%;
+  bottom: 14px;
+  transform: translateX(-50%);
+  z-index: 7;
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+  padding: 9px 14px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, var(--leather-2), var(--leather));
+  border: 1px solid rgba(201, 166, 72, 0.55);
+  outline: 1px solid rgba(0, 0, 0, 0.5);
+  box-shadow:
+    0 10px 30px rgba(20, 10, 2, 0.45),
+    inset 0 1px 0 rgba(255, 220, 150, 0.14);
+  font-family: "Cinzel", serif;
+  color: #e8d9b0;
+  user-select: none;
+}
+
+.hud-stat {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 6px;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+#hud-gold { color: var(--gold-bright); min-width: 74px; }
+.army-glyph { color: #b8c6e8; font-size: 14px; }
+#hud-army { color: #cdd8ef; font-size: 13px; }
+
+.coin {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #ffe9a8, #c9a648 55%, #8a6a1c);
+  box-shadow: 0 0 5px rgba(201, 166, 72, 0.8), inset 0 0 2px rgba(90, 60, 0, 0.8);
+  display: inline-block;
+  flex: none;
+}
+.coin.small { width: 9px; height: 9px; }
+
+.hud-sep {
+  width: 1px;
+  margin: 2px 2px;
+  background: linear-gradient(180deg, transparent, rgba(201, 166, 72, 0.5), transparent);
+}
+
+.train-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  min-width: 86px;
+  padding: 6px 10px 5px;
+  border-radius: 9px;
+  border: 1px solid rgba(201, 166, 72, 0.5);
+  background: linear-gradient(180deg, #52351b, #3a2310);
+  color: #f0e2bb;
+  font-family: "Cinzel", serif;
+  cursor: pointer;
+  transition: transform 0.08s ease, box-shadow 0.12s ease, filter 0.12s ease;
+  box-shadow: inset 0 1px 0 rgba(255, 226, 160, 0.18), 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+.train-btn .glyph { font-size: 17px; line-height: 1; color: var(--gold-bright); font-family: serif; }
+.train-btn .name { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
+.train-btn .meta { font-size: 10px; opacity: 0.85; display: flex; align-items: center; gap: 3px; }
+.train-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 226, 160, 0.25); }
+.train-btn:active:not(:disabled) { transform: translateY(0); }
+.train-btn:disabled { filter: grayscale(0.7) brightness(0.7); cursor: not-allowed; }
+
+.train-btn.flash { animation: btn-flash 0.35s ease; }
+@keyframes btn-flash {
+  0% { box-shadow: 0 0 0 0 rgba(201, 166, 72, 0.9); }
+  100% { box-shadow: 0 0 0 14px rgba(201, 166, 72, 0); }
+}
+
+.hud-hint {
+  align-self: center;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: rgba(232, 217, 176, 0.62);
+  max-width: 190px;
+  line-height: 1.5;
+}
+
+kbd {
+  font-family: "Cinzel", serif;
+  font-size: 0.9em;
+  border: 1px solid rgba(201, 166, 72, 0.6);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  padding: 0 4px;
+  background: rgba(0, 0, 0, 0.25);
+}
+
+/* ——— Intro & banner overlays ——— */
+#intro, #banner {
+  position: fixed;
+  inset: 0;
+  z-index: 9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(30, 18, 6, 0.35);
+  backdrop-filter: blur(2px) sepia(0.2);
+  transition: opacity 0.6s ease;
+}
+#intro.hidden, #banner.hidden {
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden; /* kills the full-viewport backdrop-filter once faded */
+  transition: opacity 0.6s ease, visibility 0s linear 0.6s;
+}
+#banner[hidden] { display: none; }
+
+#intro-card, #banner-card {
+  background:
+    radial-gradient(120% 100% at 50% 0%, rgba(255, 250, 232, 0.9), rgba(240, 226, 190, 0.94)),
+    var(--parchment);
+  border: 1px solid rgba(122, 90, 44, 0.65);
+  outline: 4px double rgba(122, 90, 44, 0.45);
+  outline-offset: 5px;
+  border-radius: 4px;
+  box-shadow: 0 30px 80px rgba(20, 10, 2, 0.55);
+  padding: 34px 44px 30px;
+  max-width: 520px;
+  margin: 20px;
+  text-align: center;
+}
+
+#intro-card h1 {
+  font-family: "UnifrakturMaguntia", serif;
+  font-weight: 400;
+  font-size: clamp(30px, 5vw, 44px);
+  line-height: 1.12;
+  color: var(--rubric);
+  margin: 14px 0 10px;
+  text-shadow: 0 1px 0 rgba(255, 255, 240, 0.7);
+}
+
+.intro-sub { font-size: 16.5px; line-height: 1.5; color: var(--ink-faded); margin: 0 0 18px; }
+
+.intro-controls {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 6px 16px;
+  text-align: left;
+  margin: 0 auto 16px;
+  max-width: 360px;
+  font-size: 14.5px;
+}
+.intro-controls dt { font-family: "Cinzel", serif; font-weight: 700; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--rubric); align-self: center; }
+.intro-controls dd { margin: 0; color: var(--ink); }
+.intro-controls kbd { border-color: rgba(122, 90, 44, 0.7); background: rgba(122, 90, 44, 0.08); color: var(--ink); }
+
+.intro-note { font-style: italic; font-size: 14px; color: var(--ink-faded); line-height: 1.5; margin: 0 0 20px; }
+
+.intro-rule {
+  height: 1px;
+  margin: 2px 30px;
+  background: linear-gradient(90deg, transparent, rgba(122, 90, 44, 0.65), transparent);
+  position: relative;
+}
+.intro-rule::after {
+  content: "❖";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -52%);
+  color: var(--gold);
+  font-size: 11px;
+  background: var(--parchment);
+  padding: 0 8px;
+}
+
+#begin, #banner-restart {
+  font-family: "Cinzel", serif;
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.1em;
+  color: #f5e6bd;
+  background: radial-gradient(circle at 50% 25%, #a03024, var(--rubric) 65%, #5c120c);
+  border: 1px solid rgba(201, 166, 72, 0.8);
+  border-radius: 999px;
+  padding: 12px 30px;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(92, 18, 12, 0.5), inset 0 1px 0 rgba(255, 220, 150, 0.35);
+  transition: transform 0.1s ease, box-shadow 0.15s ease;
+  margin-bottom: 14px;
+}
+#begin:hover, #banner-restart:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 10px 26px rgba(92, 18, 12, 0.6), inset 0 1px 0 rgba(255, 220, 150, 0.45); }
+
+#banner-card h2 {
+  font-family: "UnifrakturMaguntia", serif;
+  font-weight: 400;
+  font-size: 52px;
+  margin: 6px 0 8px;
+  color: var(--rubric);
+}
+#banner-card h2.victory { color: #276229; }
+#banner-text { font-size: 17px; font-style: italic; color: var(--ink-faded); margin: 0 0 22px; line-height: 1.55; }
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 720px) {
+  .hud-hint { display: none; }
+  #hud { gap: 6px; padding: 7px 10px; bottom: 10px; }
+  .train-btn { min-width: 68px; padding: 5px 7px 4px; }
+  #folio-title { display: none; }
+}

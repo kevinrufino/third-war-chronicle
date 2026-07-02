@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Chronicle of the Third War</title>
+    <meta name="description" content="The story of Warcraft III, typeset as an illuminated manuscript — with a live RTS battle waged across the page. Powered by pretext." />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚔️</text></svg>" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=IM+Fell+English:ital@0;1&family=UnifrakturMaguntia&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <!-- Scroll spacer: its height is set from pretext's computed document height -->
+    <div id="spacer"></div>
+
+    <!-- Everything is drawn here: the chronicle text, the armies, the war -->
+    <canvas id="stage"></canvas>
+
+    <!-- Film grain + vignette live in CSS pseudo-elements on body -->
+
+    <header id="folio" aria-hidden="true">
+      <div id="folio-label">Folio I</div>
+      <div id="folio-title">The Chronicle of the Third War</div>
+    </header>
+    <div id="progress" aria-hidden="true"><div id="progress-fill"></div></div>
+
+    <nav id="hud" aria-label="War council">
+      <div class="hud-stat" id="hud-gold" title="Gold — your war chest fills over time">
+        <span class="coin"></span><span id="gold-amount">0</span>
+      </div>
+      <div class="hud-stat" id="hud-army" title="Your army / muster limit">
+        <span class="army-glyph">⚑</span><span id="army-count">0/40</span>
+      </div>
+      <div class="hud-sep"></div>
+      <button class="train-btn" id="train-footman" data-kind="footman">
+        <span class="glyph">⚔</span>
+        <span class="name">Footman</span>
+        <span class="meta"><span class="coin small"></span>50 · <kbd>1</kbd></span>
+      </button>
+      <button class="train-btn" id="train-archer" data-kind="archer">
+        <span class="glyph">➶</span>
+        <span class="name">Archer</span>
+        <span class="meta"><span class="coin small"></span>75 · <kbd>2</kbd></span>
+      </button>
+      <button class="train-btn" id="train-knight" data-kind="knight">
+        <span class="glyph">♞</span>
+        <span class="name">Knight</span>
+        <span class="meta"><span class="coin small"></span>140 · <kbd>3</kbd></span>
+      </button>
+      <div class="hud-sep"></div>
+      <div class="hud-hint">drag&nbsp;· muster&ensp;right‑click&nbsp;· command&ensp;<kbd>F</kbd>&nbsp;· all</div>
+    </nav>
+
+    <div id="banner" hidden>
+      <div id="banner-card">
+        <h2 id="banner-title">Victory</h2>
+        <p id="banner-text"></p>
+        <button id="banner-restart">Wage the War Anew</button>
+      </div>
+    </div>
+
+    <div id="intro">
+      <div id="intro-card">
+        <div class="intro-rule"></div>
+        <h1>The Chronicle of<br />the Third War</h1>
+        <p class="intro-sub">Being the story of <em>Warcraft III</em>, set down in one continuous scroll — while a small war is waged across its pages.</p>
+        <dl class="intro-controls">
+          <dt>Scroll</dt><dd>read the chronicle</dd>
+          <dt>Drag</dt><dd>muster your soldiers</dd>
+          <dt>Right‑click</dt><dd>march &amp; attack</dd>
+          <dt><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd></dt><dd>train footman · archer · knight</dd>
+          <dt><kbd>F</kbd></dt><dd>rally the whole army</dd>
+        </dl>
+        <p class="intro-note">Your keep stands at the lower‑left of the page. The Scourge festers at the upper‑right. Soldiers shoulder the very words aside as they march.</p>
+        <button id="begin">⚜ Begin the Chronicle ⚜</button>
+        <div class="intro-rule"></div>
+      </div>
+    </div>
+
+    <!-- Full story for screen readers & search engines; the canvas is decorative+interactive -->
+    <article id="a11y-story" class="sr-only" aria-label="The Chronicle of the Third War, full text"></article>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
