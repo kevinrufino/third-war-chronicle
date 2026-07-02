@@ -3,6 +3,22 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
+  "description": "The story of Warcraft III, typeset as an illuminated manuscript with a live RTS battle fought on top of the page. Built on the pretext text-layout engine.",
+  "keywords": [
+    "pretext",
+    "warcraft",
+    "rts",
+    "canvas",
+    "typography",
+    "game"
+  ],
+  "author": "Kevin Rufino",
+  "license": "MIT",
+  "homepage": "https://kevinrufino.github.io/third-war-chronicle/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kevinrufino/third-war-chronicle.git"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",

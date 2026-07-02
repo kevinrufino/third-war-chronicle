@@ -12,6 +12,12 @@ the text, and the letters spring back like reeds.
 Built around [pretext](https://github.com/chenglou/pretext), chenglou's pure-arithmetic
 text measurement & layout engine.
 
+![TypeScript](https://img.shields.io/badge/TypeScript-3178c6?logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-646cff?logo=vite&logoColor=white)
+![No framework](https://img.shields.io/badge/framework-none-2b2015)
+![Deploy](https://github.com/kevinrufino/third-war-chronicle/actions/workflows/deploy.yml/badge.svg)
+![License: MIT](https://img.shields.io/badge/license-MIT-9a7423)
+
 ## Why pretext
 
 Canvas has no multiline text. pretext *is* the text engine here:
@@ -51,6 +57,23 @@ npm run dev     # localhost:5173 dev server (Node 18+)
 npm run build   # type-check + production build → dist/
 ```
 
+## How it fits together
+
+```
+ pretext            typeset.ts          game.ts
+ (layout)   ──▶  words as particles ◀──  units / projectiles / blasts
+                        │                      │  push forces
+                        ▼                      ▼
+                    render.ts  ──▶  one <canvas>: parchment + ink armies
+                        ▲
+        main.ts loop ───┘   (scroll = camera · spacer div = scrollbar)
+```
+
+Each frame: step the war → collect every unit/projectile/blast/cursor as a push
+force → integrate the visible words' spring physics → draw the whole page and the
+battle in a single canvas pass. Only words inside the viewport are simulated or
+drawn (binary-searched against pretext's measured line positions).
+
 ## Structure
 
 - `src/story.ts` — the chronicle itself (original retelling, prologue → epilogue)
@@ -59,3 +82,28 @@ npm run build   # type-check + production build → dist/
 - `src/game.ts` — units, bases, combat, projectiles, gold, Scourge wave AI
 - `src/render.ts` — one-canvas renderer: manuscript page + ink-blob armies
 - `src/input.ts` / `src/hud.ts` / `src/main.ts` — RTS controls, war-council UI, boot + loop
+
+## Tech stack
+
+- **[pretext](https://github.com/chenglou/pretext)** — text measurement & line layout (the core dependency)
+- **TypeScript**, no UI framework — a single `<canvas>` and a hand-written rAF loop
+- **Vite** for dev/build; deployed to **GitHub Pages** via GitHub Actions on every push to `main`
+- Typefaces: *UnifrakturMaguntia* (blackletter), *IM Fell English* (body), *Cinzel* (small caps)
+
+## Deployment
+
+Pushing to `main` triggers [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml),
+which builds with Node 20 and publishes `dist/` to GitHub Pages. No manual step.
+
+## Credits & disclaimer
+
+This is a non-commercial **fan project**. *Warcraft III*, its story, characters, and
+setting are trademarks and copyright of **Blizzard Entertainment**. The prose here is
+an original retelling written for this project and is not affiliated with, endorsed by,
+or sponsored by Blizzard. Text layout by [pretext](https://github.com/chenglou/pretext)
+(© chenglou, MIT).
+
+## License
+
+[MIT](LICENSE) — applies to this project's own code. Trademarks and the underlying
+*Warcraft* IP remain with their respective owners.
