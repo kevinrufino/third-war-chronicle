@@ -25,7 +25,7 @@ function el(id: string): HTMLElement {
   return node
 }
 
-export function initHud(handlers: { onBegin: () => void; onRestart: () => void }): Hud {
+export function initHud(handlers: { onBegin: (voiced: boolean) => void; onRestart: () => void }): Hud {
   const hud: Hud = {
     gold: el('gold-amount'),
     army: el('army-count'),
@@ -44,7 +44,12 @@ export function initHud(handlers: { onBegin: () => void; onRestart: () => void }
   }
   el('begin').addEventListener('click', () => {
     hud.intro.classList.add('hidden')
-    handlers.onBegin()
+    handlers.onBegin(false)
+  })
+  // the voiced begin may have been removed when speech is unsupported
+  document.getElementById('begin-voiced')?.addEventListener('click', () => {
+    hud.intro.classList.add('hidden')
+    handlers.onBegin(true)
   })
   el('banner-restart').addEventListener('click', () => {
     hud.banner.classList.add('hidden')

@@ -21,6 +21,17 @@
     <!-- Everything is drawn here: the chronicle text, the armies, the war -->
     <canvas id="stage"></canvas>
 
+    <!-- The turning leaf: a snapshot of the page, flipped in 3D as the
+         Chronicler reads past the foot of the folio -->
+    <div id="flip-layer" aria-hidden="true" hidden>
+      <div id="flip-shadow"></div>
+      <div id="flip-page">
+        <canvas id="flip-face"></canvas>
+        <div class="flip-shade"></div>
+        <div id="flip-back"></div>
+      </div>
+    </div>
+
     <!-- Film grain + vignette live in CSS pseudo-elements on body -->
 
     <header id="folio" aria-hidden="true">
@@ -28,6 +39,35 @@
       <div id="folio-title">The Chronicle of the Third War</div>
     </header>
     <div id="progress" aria-hidden="true"><div id="progress-fill"></div></div>
+
+    <!-- The Chronicler's lectern: audio narration controls -->
+    <aside id="chronicler" aria-label="The Chronicler — hear the tale read aloud" hidden>
+      <button id="narr-toggle" aria-pressed="false" title="The Chronicler reads aloud · N">
+        <span class="narr-ring" aria-hidden="true"></span>
+        <span class="narr-glyph narr-play" aria-hidden="true">▶</span>
+        <span class="narr-glyph narr-pause" aria-hidden="true">❚❚</span>
+      </button>
+      <div id="narr-panel">
+        <div class="narr-chapter-row">
+          <button id="narr-prev" title="Previous chapter" aria-label="Previous chapter">⟨</button>
+          <span id="narr-chapter">The Chronicle</span>
+          <button id="narr-next" title="Next chapter" aria-label="Next chapter">⟩</button>
+        </div>
+        <label class="narr-field">Chronicler
+          <select id="narr-voice" aria-label="Narrator voice"></select>
+        </label>
+        <label class="narr-field">Cadence
+          <select id="narr-tempo" aria-label="Narration pace">
+            <option value="0.85">Measured</option>
+            <option value="0.93" selected>Stately</option>
+            <option value="1.04">Brisk</option>
+          </select>
+        </label>
+        <div id="narr-mute-note" hidden>This browser grants no voice — the page follows the tale silently.</div>
+      </div>
+    </aside>
+
+    <button id="return-pill" hidden>❧&ensp;Return to the telling</button>
 
     <nav id="hud" aria-label="War council">
       <div class="hud-stat" id="hud-gold" title="Gold — your war chest fills over time">
@@ -75,9 +115,11 @@
           <dt>Right‑click</dt><dd>march &amp; attack</dd>
           <dt><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd></dt><dd>train footman · archer · knight</dd>
           <dt><kbd>F</kbd></dt><dd>rally the whole army</dd>
+          <dt><kbd>N</kbd></dt><dd>the chronicler reads aloud</dd>
         </dl>
         <p class="intro-note">Your keep stands at the lower‑left of the page. The Scourge festers at the upper‑right. Soldiers shoulder the very words aside as they march.</p>
-        <button id="begin">⚜ Begin the Chronicle ⚜</button>
+        <button id="begin-voiced" class="begin-primary">⚜ Begin — let the Chronicler speak ⚜</button>
+        <button id="begin" class="begin-quiet">or read in silence</button>
         <div class="intro-rule"></div>
       </div>
     </div>

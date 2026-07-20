@@ -2,10 +2,27 @@
 // the little war raging on top of it. One canvas, one pass, every frame.
 
 import { KINDS, PLAYER, type Game, type Unit } from './game'
+import type { NarrationView } from './narration'
 import { visibleRange, type Typeset } from './typeset'
 
 // Palette indices from typeset.ts → actual ink
 const PALETTE = ['#2b2015', '#7f1b14', '#5a4732', '#8a671c']
+const PALETTE_RGB: [number, number, number][] = [
+  [43, 32, 21],
+  [127, 27, 20],
+  [90, 71, 50],
+  [138, 103, 28],
+]
+// Gilded ember the Chronicler's voice leaves on a word, fading back to ink
+const HI_RGB: [number, number, number] = [186, 122, 22]
+
+function glowInk(c: number, t: number): string {
+  const p = PALETTE_RGB[c]!
+  const r = Math.round(p[0] + (HI_RGB[0] - p[0]) * t)
+  const g = Math.round(p[1] + (HI_RGB[1] - p[1]) * t)
+  const b = Math.round(p[2] + (HI_RGB[2] - p[2]) * t)
+  return `rgb(${r},${g},${b})`
+}
 
 const PLAYER_LABEL = 'THE KING’S BASTION'
 const ENEMY_LABEL = 'THE BLACK NECROPOLIS'
@@ -33,12 +50,14 @@ export function render(
   vh: number,
   ui: UiState,
   time: number,
+  narr: NarrationView | null,
 ): void {
   ctx.clearRect(0, 0, vw, vh)
 
   drawMarginRules(ctx, ts, vh)
+  drawLamplight(ctx, narr, scrollY, vh)
   drawDecors(ctx, ts, scrollY, vh)
-  drawWords(ctx, ts, scrollY, vh)
+  drawWords(ctx, ts, scrollY, vh, narr)
 
   // the war, fought upon the glass above the page
   drawSplats(ctx, game)
@@ -103,24 +122,67 @@ function drawDecors(ctx: CanvasRenderingContext2D, ts: Typeset, scrollY: number,
   }
 }
 
-function drawWords(ctx: CanvasRenderingContext2D, ts: Typeset, scrollY: number, vh: number): void {
+// A carried candle that travels with the Chronicler's voice along the page
+function drawLamplight(ctx: CanvasRenderingContext2D, narr: NarrationView | null, scrollY: number, vh: number): void {
+  if (narr === null || narr.lampA < 0.02 || narr.word < 0) return
+  const sy = narr.lampY - scrollY
+  if (sy < -260 || sy > vh + 260) return
+  const x = narr.lampX
+  const a = narr.lampA
+  const halo = ctx.createRadialGradient(x, sy, 0, x, sy, 175)
+  halo.addColorStop(0, `rgba(255, 214, 120, ${0.15 * a})`)
+  halo.addColorStop(0.55, `rgba(255, 202, 96, ${0.065 * a})`)
+  halo.addColorStop(1, 'rgba(255, 202, 96, 0)')
+  ctx.fillStyle = halo
+  ctx.fillRect(x - 175, sy - 175, 350, 350)
+  const core = ctx.createRadialGradient(x, sy, 0, x, sy, 62)
+  core.addColorStop(0, `rgba(255, 228, 150, ${0.11 * a})`)
+  core.addColorStop(1, 'rgba(255, 228, 150, 0)')
+  ctx.fillStyle = core
+  ctx.fillRect(x - 62, sy - 62, 124, 124)
+}
+
+function drawWords(
+  ctx: CanvasRenderingContext2D,
+  ts: Typeset,
+  scrollY: number,
+  vh: number,
+  narr: NarrationView | null,
+): void {
   const [i0, i1] = visibleRange(ts, scrollY, vh)
   const words = ts.words
   ctx.textBaseline = 'alphabetic'
   let curF = -1
   let curC = -1
+  const spoken = narr === null ? -1 : narr.word
   for (let i = i0; i < i1; i++) {
     const w = words[i]!
     if (w.f !== curF) {
       curF = w.f
       ctx.font = ts.fonts[curF]!.css
     }
-    if (w.c !== curC) {
+    const hi = narr === null ? 0 : i === spoken ? narr.attack : (narr.glow.get(i) ?? 0)
+    if (hi > 0.02) {
+      ctx.fillStyle = glowInk(w.c, hi)
+      curC = -1 // the cached ink is stale now
+    } else if (w.c !== curC) {
       curC = w.c
       ctx.fillStyle = PALETTE[curC]!
     }
     const sy = w.y - scrollY + w.dy
-    if (w.rot !== 0) {
+    if (i === spoken && narr !== null) {
+      // the word being spoken: gilded, lifted, haloed
+      const a = narr.attack
+      ctx.save()
+      ctx.translate(w.x + w.dx + w.w / 2, sy)
+      const s = 1 + 0.05 * a
+      ctx.scale(s, s)
+      if (w.rot !== 0) ctx.rotate(w.rot)
+      ctx.shadowColor = `rgba(240, 196, 96, ${0.85 * a})`
+      ctx.shadowBlur = 16 * a
+      ctx.fillText(w.text, -w.w / 2, 0)
+      ctx.restore()
+    } else if (w.rot !== 0) {
       ctx.save()
       ctx.translate(w.x + w.dx + w.w / 2, sy)
       ctx.rotate(w.rot)
