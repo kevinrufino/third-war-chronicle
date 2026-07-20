@@ -92,7 +92,12 @@ async function boot(): Promise<void> {
     onBegin: voiced => {
       game.started = true
       deployStartingForce(game)
-      if (voiced) narrator.start(0)
+      if (voiced) {
+        narrator.start(0)
+        // opening flourish: turn the cover leaf so the reader meets the
+        // page-flip the moment the telling begins
+        flipTo(canvas, 0, 1)
+      }
     },
     onRestart: () => {
       restartGame(game)

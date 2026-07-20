@@ -61,14 +61,20 @@ export function initChronicler(narr: Narrator): void {
   })
 
   // reading ahead (or back) by hand parts company with the telling — the
-  // pill offers the way home
-  const disengage = (): void => {
-    if (narr.playing && narr.follow) narr.setFollow(false)
-  }
-  window.addEventListener('wheel', disengage, { passive: true })
-  window.addEventListener('touchmove', disengage, { passive: true })
+  // pill (or seven still seconds) brings it home. A lone trackpad tick
+  // shouldn't count as wandering, so wheel input must add up first.
+  let wheelAcc = 0
+  let wheelAt = 0
+  window.addEventListener('wheel', e => {
+    const t = performance.now()
+    if (t - wheelAt > 800) wheelAcc = 0
+    wheelAt = t
+    wheelAcc += Math.abs(e.deltaY)
+    if (wheelAcc > 50) narr.noteUserScroll()
+  }, { passive: true })
+  window.addEventListener('touchmove', () => narr.noteUserScroll(), { passive: true })
   window.addEventListener('keydown', e => {
-    if (['PageDown', 'PageUp', 'Home', 'End', 'ArrowDown', 'ArrowUp', ' '].includes(e.key)) disengage()
+    if (['PageDown', 'PageUp', 'Home', 'End', 'ArrowDown', 'ArrowUp', ' '].includes(e.key)) narr.noteUserScroll()
   })
 
   let voiceCount = -1

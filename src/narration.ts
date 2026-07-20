@@ -36,6 +36,7 @@ export type Narrator = {
   currentChapter: () => number
   refollow: () => void
   setFollow: (follow: boolean) => void
+  noteUserScroll: () => void
   voices: () => SpeechSynthesisVoice[]
   voiceURI: () => string | null
   setVoice: (uri: string) => void
@@ -359,6 +360,7 @@ export function createNarrator(opts: NarratorOpts): Narrator {
   }
 
   let lastFlipAt = 0
+  let lastUserScrollAt = 0
 
   const narrator: Narrator = {
     supported,
@@ -463,6 +465,16 @@ export function createNarrator(opts: NarratorOpts): Narrator {
       emit()
     },
 
+    // the reader took the page: pause following, but only until their hands
+    // leave the scroll — tick() returns to the telling after a quiet spell
+    noteUserScroll(): void {
+      lastUserScrollAt = performance.now()
+      if (narrator.playing && narrator.follow) {
+        narrator.follow = false
+        emit()
+      }
+    },
+
     voices: () => sortedVoices,
     voiceURI: () => (chosenVoice === null ? null : chosenVoice.voiceURI),
 
@@ -548,6 +560,14 @@ export function createNarrator(opts: NarratorOpts): Narrator {
       }
       const lampTarget = narrator.playing ? 1 : 0
       view.lampA += (lampTarget - view.lampA) * Math.min(1, dt * 3)
+
+      // the reader wandered off but their hands have been still: the telling
+      // reclaims the page (flipping back to it if it scrolled out of view)
+      if (narrator.playing && !narrator.follow && now - lastUserScrollAt > 7000) {
+        narrator.follow = true
+        lastFlipAt = 0
+        emit()
+      }
 
       // page-flip: when the spoken word walks off the open page, turn it
       if (narrator.playing && narrator.follow && w !== undefined && now - lastFlipAt > 900) {
