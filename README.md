@@ -7,6 +7,12 @@ the upper-right and sends escalating waves against you. Every soldier, projectil
 death-blast physically shoves the words of the chronicle aside as the war moves across
 the text, and the letters spring back like reeds.
 
+And the book reads itself aloud. **The Chronicler** — an audiobook narrator built on the
+browser's own speech engine — tells the tale in a low, stately voice while each spoken
+word kindles gold on the page, a lamplight glow travels with the telling, and the page
+**turns itself in 3D** whenever the voice reads past the foot of the folio. Command your
+army while the story of the war is read over the battle.
+
 **[▶ Play it now →](https://third-war-chronicle.vercel.app/)**
 
 Built around [pretext](https://github.com/chenglou/pretext), chenglou's pure-arithmetic
@@ -42,8 +48,31 @@ Canvas has no multiline text. pretext *is* the text engine here:
 | Right-click | attack-move; right-click an enemy or the necropolis to focus it |
 | `1` / `2` / `3` | train Footman (50g) / Archer (75g) / Knight (140g) |
 | `F` | select the whole army · `Esc` deselect |
+| `N` | the Chronicler reads aloud (play / pause) |
 
 Gold accrues over time. The Scourge's waves grow with every assault it loses.
+
+## The Chronicler (audio narration)
+
+Begin with **“let the Chronicler speak”** (or press `N` any time) and the chronicle is
+read to you like an audiobook while you play:
+
+- **No assets, no keys, no server** — narration uses the Web Speech API built into the
+  browser. The narrator picks the most chronicler-like voice available (deep, en-GB
+  where possible) and reads at a low pitch and stately pace; hover the lectern in the
+  top-left to choose a different voice or cadence, or skip between chapters.
+- **Word-perfect highlighting** — the engine's word-boundary events are mapped back
+  through the pretext layout to the exact word particle on the canvas, which kindles
+  gold as it is spoken and fades back to ink behind the voice. A soft lamplight glow
+  follows the reading down the page.
+- **The page turns itself** — when the spoken word walks off the open page, the live
+  canvas is photographed and flipped over in 3D like a leaf of the codex (spine at the
+  screen's edge, ink ghosting through the back of the sheet) while the scroll lands on
+  the next passage beneath it. Scroll away mid-telling and a *“Return to the telling”*
+  pill flips you back. `prefers-reduced-motion` swaps the flip for a smooth scroll.
+- **Never stalls** — browsers without boundary events (or without any voice at all)
+  fall back to a reading-pace estimator, so the highlight and the page-turns carry on
+  silently and the telling never wedges.
 
 ## Play
 
@@ -78,9 +107,14 @@ drawn (binary-searched against pretext's measured line positions).
 
 - `src/story.ts` — the chronicle itself (original retelling, prologue → epilogue)
 - `src/typeset.ts` — pretext layout: chapters → lines → word particles; drop caps,
-  justification, virtualization, spring physics
+  justification, virtualization, spring physics, narration segments
 - `src/game.ts` — units, bases, combat, projectiles, gold, Scourge wave AI
-- `src/render.ts` — one-canvas renderer: manuscript page + ink-blob armies
+- `src/render.ts` — one-canvas renderer: manuscript page + ink-blob armies + the
+  Chronicler's karaoke glow and lamplight
+- `src/narration.ts` — the Chronicler: Web Speech narration, word-boundary sync,
+  reading-pace estimator, page-flip cues
+- `src/pageflip.ts` — the 3D page-turn (canvas snapshot flipped like a codex leaf)
+- `src/chronicler.ts` — the lectern dock: play/pause, chapter skips, voice & cadence
 - `src/input.ts` / `src/hud.ts` / `src/main.ts` — RTS controls, war-council UI, boot + loop
 
 ## Tech stack

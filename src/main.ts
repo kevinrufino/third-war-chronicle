@@ -10,8 +10,11 @@ import {
   KINDS,
   type Game,
 } from './game'
+import { initChronicler } from './chronicler'
 import { flashButton, initHud, showBanner, updateFolio, updateHud, wireTrainButtons } from './hud'
 import { setupInput } from './input'
+import { createNarrator } from './narration'
+import { flipTo } from './pageflip'
 import { render, type UiState } from './render'
 import { buildTypeset, chapterAt, updateWords, type Pusher, type Typeset } from './typeset'
 import { chapters, FOREWORD, SUBTITLE, TITLE } from './story'
@@ -79,10 +82,17 @@ async function boot(): Promise<void> {
   const game = createGame(window.innerWidth, window.innerHeight)
   const ui: UiState = { marquee: null, mouse: { x: -9999, y: -9999 } }
 
+  const narrator = createNarrator({
+    getTypeset: () => ts,
+    requestFlip: (targetY, dir) => flipTo(canvas, targetY, dir),
+  })
+  initChronicler(narrator)
+
   const hud = initHud({
-    onBegin: () => {
+    onBegin: voiced => {
       game.started = true
       deployStartingForce(game)
+      if (voiced) narrator.start(0)
     },
     onRestart: () => {
       restartGame(game)
@@ -127,8 +137,9 @@ async function boot(): Promise<void> {
 
     const t1 = performance.now()
     updateWords(ts, collectPushers(game, ui, scrollY), scrollY, vh, dt)
+    narrator.tick(now, scrollY, vh, dt)
     const t2 = performance.now()
-    render(ctx, ts, game, scrollY, vw, vh, ui, now / 1000)
+    render(ctx, ts, game, scrollY, vw, vh, ui, now / 1000, narrator.view)
     const t3 = performance.now()
     perf.game += t1 - t0
     perf.words += t2 - t1
@@ -146,7 +157,7 @@ async function boot(): Promise<void> {
   requestAnimationFrame(loop)
 
   // debug/testing hook
-  ;(window as unknown as Record<string, unknown>).__chronicle = { game, getTypeset: () => ts, ui, perf }
+  ;(window as unknown as Record<string, unknown>).__chronicle = { game, getTypeset: () => ts, ui, perf, narrator }
 }
 
 void boot()

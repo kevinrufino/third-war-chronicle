@@ -294,7 +294,7 @@ kbd {
   padding: 0 8px;
 }
 
-#begin, #banner-restart {
+.begin-primary, #banner-restart {
   font-family: "Cinzel", serif;
   font-weight: 700;
   font-size: 15px;
@@ -309,7 +309,25 @@ kbd {
   transition: transform 0.1s ease, box-shadow 0.15s ease;
   margin-bottom: 14px;
 }
-#begin:hover, #banner-restart:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 10px 26px rgba(92, 18, 12, 0.6), inset 0 1px 0 rgba(255, 220, 150, 0.45); }
+.begin-primary:hover, #banner-restart:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 10px 26px rgba(92, 18, 12, 0.6), inset 0 1px 0 rgba(255, 220, 150, 0.45); }
+
+.begin-quiet {
+  display: block;
+  margin: -4px auto 14px;
+  padding: 4px 10px;
+  border: none;
+  background: none;
+  font-family: "IM Fell English", serif;
+  font-style: italic;
+  font-size: 14.5px;
+  color: var(--ink-faded);
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: rgba(122, 90, 44, 0.5);
+  text-underline-offset: 3px;
+  transition: color 0.15s ease;
+}
+.begin-quiet:hover { color: var(--rubric); }
 
 #banner-card h2 {
   font-family: "UnifrakturMaguntia", serif;
@@ -333,9 +351,277 @@ kbd {
   border: 0;
 }
 
+/* ——— The Chronicler (audio narration dock) ——— */
+#chronicler {
+  position: fixed;
+  top: 16px;
+  left: 18px;
+  z-index: 7;
+  font-family: "Cinzel", serif;
+  user-select: none;
+}
+
+#narr-toggle {
+  position: relative;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  border: 1px solid rgba(201, 166, 72, 0.65);
+  outline: 1px solid rgba(0, 0, 0, 0.45);
+  background: radial-gradient(circle at 38% 28%, #52351b, var(--leather-2) 55%, var(--leather));
+  color: var(--gold-bright);
+  cursor: pointer;
+  box-shadow:
+    0 8px 22px rgba(20, 10, 2, 0.4),
+    inset 0 1px 0 rgba(255, 220, 150, 0.18);
+  transition: transform 0.12s ease, box-shadow 0.2s ease;
+}
+#narr-toggle:hover { transform: translateY(-1px) scale(1.04); }
+#narr-toggle:active { transform: scale(0.98); }
+
+/* the rune ring: dashed gold orbit that turns while the Chronicler speaks */
+.narr-ring {
+  position: absolute;
+  inset: -5px;
+  border-radius: 50%;
+  border: 1px dashed rgba(201, 166, 72, 0.55);
+  animation: narr-spin 18s linear infinite;
+  animation-play-state: paused;
+  pointer-events: none;
+}
+#chronicler.speaking .narr-ring { animation-play-state: running; border-color: rgba(201, 166, 72, 0.9); }
+#chronicler.speaking #narr-toggle {
+  animation: narr-halo 2.6s ease-in-out infinite;
+}
+@keyframes narr-spin { to { transform: rotate(360deg); } }
+@keyframes narr-halo {
+  0%, 100% { box-shadow: 0 8px 22px rgba(20, 10, 2, 0.4), 0 0 0 0 rgba(201, 166, 72, 0.35), inset 0 1px 0 rgba(255, 220, 150, 0.18); }
+  50% { box-shadow: 0 8px 22px rgba(20, 10, 2, 0.4), 0 0 22px 4px rgba(201, 166, 72, 0.4), inset 0 1px 0 rgba(255, 220, 150, 0.18); }
+}
+
+.narr-glyph {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  line-height: 1;
+  text-shadow: 0 0 8px rgba(201, 166, 72, 0.6);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.narr-play { padding-left: 4px; }
+.narr-pause { font-size: 13px; letter-spacing: 2px; opacity: 0; transform: scale(0.7); }
+#chronicler.playing .narr-play { opacity: 0; transform: scale(0.7); }
+#chronicler.playing .narr-pause { opacity: 1; transform: scale(1); }
+
+/* the lectern panel unfurls on hover / focus */
+#narr-panel {
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 0;
+  width: 240px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, var(--leather-2), var(--leather));
+  border: 1px solid rgba(201, 166, 72, 0.55);
+  outline: 1px solid rgba(0, 0, 0, 0.5);
+  box-shadow: 0 10px 30px rgba(20, 10, 2, 0.45), inset 0 1px 0 rgba(255, 220, 150, 0.14);
+  color: #e8d9b0;
+  opacity: 0;
+  transform: translateY(-6px);
+  pointer-events: none;
+  transition: opacity 0.22s ease, transform 0.22s ease;
+}
+#chronicler:hover #narr-panel,
+#chronicler:focus-within #narr-panel {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.narr-chapter-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+#narr-chapter {
+  flex: 1;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold-bright);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#narr-prev, #narr-next {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid rgba(201, 166, 72, 0.5);
+  background: rgba(0, 0, 0, 0.25);
+  color: #e8d9b0;
+  font-family: "Cinzel", serif;
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.12s ease, transform 0.12s ease;
+}
+#narr-prev:hover, #narr-next:hover { background: rgba(201, 166, 72, 0.2); transform: scale(1.08); }
+
+.narr-field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(232, 217, 176, 0.75);
+  margin-top: 8px;
+}
+.narr-field select {
+  flex: 1;
+  min-width: 0;
+  max-width: 150px;
+  font-family: "Cinzel", serif;
+  font-size: 11px;
+  color: #f0e2bb;
+  background: #2c1a0b;
+  border: 1px solid rgba(201, 166, 72, 0.5);
+  border-radius: 6px;
+  padding: 4px 6px;
+}
+
+#narr-mute-note {
+  margin-top: 10px;
+  font-family: "IM Fell English", serif;
+  font-style: italic;
+  font-size: 12px;
+  letter-spacing: 0;
+  text-transform: none;
+  line-height: 1.45;
+  color: rgba(232, 217, 176, 0.75);
+}
+
+/* the way home when the reader wanders from the telling */
+#return-pill {
+  position: fixed;
+  right: 20px;
+  bottom: 96px;
+  z-index: 7;
+  padding: 9px 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(201, 166, 72, 0.65);
+  outline: 1px solid rgba(0, 0, 0, 0.45);
+  background: linear-gradient(180deg, var(--leather-2), var(--leather));
+  color: var(--gold-bright);
+  font-family: "Cinzel", serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  box-shadow: 0 8px 22px rgba(20, 10, 2, 0.45), inset 0 1px 0 rgba(255, 220, 150, 0.16);
+  animation: pill-in 0.4s ease both;
+  transition: transform 0.12s ease;
+}
+#return-pill:hover { transform: translateY(-2px); }
+@keyframes pill-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ——— The page-turn ——— */
+#flip-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  perspective: 2600px;
+  perspective-origin: 50% 50%;
+}
+#flip-page {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transform-origin: left center;
+  will-change: transform;
+}
+#flip-layer.backward #flip-page { transform-origin: right center; }
+
+#flip-layer.turning #flip-page { animation: page-fwd 1.05s cubic-bezier(0.3, 0.06, 0.16, 1) both; }
+#flip-layer.backward.turning #flip-page { animation-name: page-back; }
+@keyframes page-fwd { from { transform: rotateY(0deg); } to { transform: rotateY(-166deg); } }
+@keyframes page-back { from { transform: rotateY(0deg); } to { transform: rotateY(166deg); } }
+
+#flip-face {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+}
+
+/* creased light sweeping the face of the leaf as it lifts */
+.flip-shade {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  background: linear-gradient(90deg, rgba(20, 10, 2, 0) 50%, rgba(20, 10, 2, 0.38));
+  opacity: 0;
+}
+#flip-layer.backward .flip-shade { transform: scaleX(-1); }
+#flip-layer.turning .flip-shade { animation: flip-shade 1.05s cubic-bezier(0.3, 0.06, 0.16, 1) both; }
+@keyframes flip-shade {
+  0% { opacity: 0; }
+  38% { opacity: 0.75; }
+  100% { opacity: 0.1; }
+}
+
+/* the back of the sheet: bare parchment, ink ghosting faintly through */
+#flip-back {
+  position: absolute;
+  inset: 0;
+  transform: rotateY(180deg);
+  backface-visibility: hidden;
+  background: linear-gradient(200deg, #e9dbbb, #d9c69d);
+  box-shadow: inset 0 0 140px rgba(90, 60, 20, 0.28);
+}
+
+/* shadow the turning leaf casts onto the fresh page beneath */
+#flip-shadow {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(25, 14, 4, 0.35), rgba(25, 14, 4, 0) 48%);
+  opacity: 0;
+}
+#flip-layer.backward #flip-shadow { transform: scaleX(-1); }
+#flip-layer.turning #flip-shadow { animation: flip-shadow 1.05s cubic-bezier(0.3, 0.06, 0.16, 1) both; }
+@keyframes flip-shadow {
+  0% { opacity: 0.9; }
+  60% { opacity: 0.5; }
+  100% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .narr-ring { animation: none; }
+  #chronicler.speaking #narr-toggle { animation: none; }
+  #return-pill { animation: none; }
+}
+
 @media (max-width: 720px) {
   .hud-hint { display: none; }
   #hud { gap: 6px; padding: 7px 10px; bottom: 10px; }
   .train-btn { min-width: 68px; padding: 5px 7px 4px; }
   #folio-title { display: none; }
+  #chronicler { top: 12px; left: 12px; }
+  #narr-toggle { width: 46px; height: 46px; }
+  #narr-panel { width: 210px; }
+  #return-pill { bottom: 88px; right: 12px; }
 }
